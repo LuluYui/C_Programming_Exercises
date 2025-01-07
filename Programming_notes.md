@@ -41,6 +41,11 @@ Type Coversions :
   
   - Creating buffer to store input
     getch() and ungetch()
+  
+  [Interesting !]: 
+    When decrementing a pointer array inside a pointer function, the
+    array element's int value will be NEGATIVE.
+    Distinguishing between pointers and arrays string.
 
 - functions :
 If the function takes arguments, declare them; if it takes no arguments, use void.  

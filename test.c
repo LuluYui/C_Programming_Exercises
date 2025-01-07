@@ -4,12 +4,19 @@
 #include <ctype.h>
 
 
+char *c;
+
+int readl(char *buf);
+
 #define SIZE 100
 main()
 {
     char s[SIZE];
-    int i, c;
+    char p[SIZE];
+    
+    readl(p);
 
-    for (i = 0; s[++i] = c = getchar(); i++) 
-        printf("i: %i, value: %d \n", i, s[i]);
+    printf("%s \n", p);
+
+    return 0; 
 }
