@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>  /* for  atof() */
 #include <ctype.h>
-#include <math.h> 
+#include <math.h>
 
 #define MAXOP   100  /* max size of operand or operator */
 #define NUMBER  '0'  /* signal that a number was found */
@@ -16,7 +16,7 @@ int getch(void);
 void ungetch(int);
 void swap(void);
 void clear(void);
-void unget(void); // to be written Exec 4-7 tbc 
+void unget(void); // to be written Exec 4-7 tbc
 
 
 char var = '0';
@@ -51,9 +51,9 @@ int main()
                 else
                     printf("error: zero divisor\n");
                 break;
-            case '%': 
+            case '%':
                 op2 = pop();
-                if (op2!= 0.0)  
+                if (op2!= 0.0)
                     push(fmod(pop(), op2));
                 break;
             case VARSET:
@@ -64,25 +64,25 @@ int main()
                 if ( var - 'a' <= varindex - 1 )
                 {
                     push(varbuf[varindex - 1]);
-                } else 
+                } else
                 {
                     printf("error: undefined variables \n=");
                 }
                 break;
-            case 'd':
+            case 'D':
                 clear();
                 break;
-            case 'w':
+            case 'W':
                 swap(); // Exec 4-4: swap the top two elements
                 break;
-            case 's': // Exec 4-5 : impl math functions 
+            case 'S': // Exec 4-5 : impl math functions
                 push(sin(pop()));
                 break;
-            case 'e':
+            case 'E':
                 push(exp(pop()));
                 break;
-            case 'p':
-                op2 = pop(); // get the power 
+            case 'P':
+                op2 = pop(); // get the power
                 push(pow(pop(), op2));
                 break;
             case '\n':
@@ -90,11 +90,11 @@ int main()
                 break;
             default:
                 printf("error: unknown command %s\n", s);
-                break; 
+                break;
         }
     }
 
-    return 0; 
+    return 0;
 }
 
 
@@ -104,19 +104,26 @@ int getop(char s[])
     int i=0, c;
     while ((s[0] = c = getch()) == ' ' || c == '\t')
         ;
-    // skipped all spaces 
+    // skipped all spaces
 
-    if (islower(c)) 
+    if (islower(c))
     {
         var = c;
         return VARGET;
     }
 
-    if (c == '-') 
+    if (c == '-') {
         s[++i] = c = getch();
+        if (!isdigit(c) && c != '.') {
+            ungetch(c);
+            s[i--] = '\0';
+            c = s[i];
+            return c;
+        }
+    }
 
     s[1] = '\0';
-    if (!isdigit(c) && c != '.' && c != '-') 
+    if (!isdigit(c) && c != '.' && c != '-')
         return c;
 
     if (isdigit(c))    /* collect integer part */
@@ -125,8 +132,8 @@ int getop(char s[])
     if (c == '.')      /* collect fraction part */
         while (isdigit(s[++i] = c = getch()))
             ;
-    
-    // Return special operations 
+
+    // Return special operations
     s[i] = '\0';
     if (c != EOF)
         ungetch(c);
@@ -154,7 +161,7 @@ void swap(void) {
         double temp = val[sp-1];
         val[sp-1] = val[sp-2];
         val[sp-2] = temp;
-    } else 
+    } else
         printf("%s", "error: less than 2 elements in stack\n");
 }
 
@@ -163,15 +170,15 @@ double pop(void)
     if (sp > 0)
         return val[--sp];
     else {
-        return 0.0; 
+        return 0.0;
     }
 }
 
 
 void clear(void) {
-    if (sp > 0) 
+    if (sp > 0)
         sp=0;
-    else 
+    else
         printf("%s", "error: stack already empty");
 }
 
@@ -193,3 +200,11 @@ void ungetch(int c)   /* push character back on input */
         buf[bufp++] = c;
 }
 
+void ungets(char s[])
+{
+    int i=0;
+
+    while (*s++)
+        i++;
+
+}
