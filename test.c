@@ -1,22 +1,17 @@
 #define MAXLINE 1000
 #include <stdio.h>
-#include <string.h> 
+#include <string.h>
 #include <ctype.h>
-
-
-char *c;
-
-int readl(char *buf);
 
 #define SIZE 100
 main()
 {
-    char s[SIZE];
-    char p[SIZE];
-    
-    readl(p);
+    char *s;
+    int i, c;
 
-    printf("%s \n", p);
+    s = "abc";
 
-    return 0; 
+    while(*s) {
+        printf("%d", *s++);
+    }
 }

@@ -16,7 +16,8 @@ int getch(void);
 void ungetch(int);
 void swap(void);
 void clear(void);
-void unget(void); // to be written Exec 4-7 tbc
+int gets(char line[], int limit);
+void ungets(char line[]); // to be written Exec 4-7 tbc
 
 
 char var = '0';
@@ -29,6 +30,7 @@ int main()
     int type;
     double op2;
     char s[MAXOP];
+
     while ((type = getop(s)) != EOF) {
         switch (type) {
             case NUMBER:
@@ -95,6 +97,7 @@ int main()
     }
 
     return 0;
+
 }
 
 
@@ -183,28 +186,62 @@ void clear(void) {
 }
 
 
-#define BUFSIZE 100
+#define BUFSIZE 1
 char buf[BUFSIZE];    /* buffer for ungetch */
 int bufp = 0;         /* next free position in buf */
 
 int getch(void)  /* get a (possibly pushed-back) character */
 {
-    return (bufp > 0) ? buf[--bufp] : getchar();
+    int tmp;
+    tmp = (bufp > 0) ? buf[--bufp] : getchar();
+    if (feof(stdin))
+    {
+      puts("EOF entered, programme abort");
+      return EOF;
+    }
+    else
+      return tmp;
 }
 
 void ungetch(int c)   /* push character back on input */
 {
     if (bufp >= BUFSIZE)
         printf("ungetch: too many characters\n");
+    else if (c == EOF)
+      printf("error: an EOF is caught on input, ignoring");
     else
         buf[bufp++] = c;
 }
 
-void ungets(char s[])
+void ungets(char *s)
 {
     int i=0;
 
-    while (*s++)
-        i++;
+    while (*s++ != '\n')
+    {
+      i++;
+    }
 
+    s-= (2 + i - 1);
+
+    while(i)
+    {
+      ungetch(s[--i]);
+    }
+
+}
+
+int gets(char *s, int limits)
+{
+  int c, i;
+
+  for (i=0; i < limits && (c = getch()) != EOF && c != '\n'; i++)
+    s[i] = c;
+
+  if( c == '\n')
+    s[i++] = c;
+
+  s[i] = '\0';
+
+  return 1;
 }
