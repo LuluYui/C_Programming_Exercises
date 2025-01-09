@@ -10,22 +10,23 @@ int readlines_p(char *lineptr[], int nlines, char *);
 void writelines(char *lineptr[], int nlines);
 void qsort(char *lineptr[], int left, int right);
 
+#define MAXLEN 1000  /* max length of any input line */
+
 int main()
 {
     int nlines;     /* number of input lines read */
-    char *stored_line;
+    char stored_line[MAXLEN];
+
     if ((nlines = readlines(lineptr, MAXLINES, stored_line)) >= 0) {
         qsort(lineptr, 0, nlines-1);
         writelines(lineptr, nlines);
         return 1;
     } else {
         printf("error: input too big to sort\n");
+        return 0;
     }
-
-    return 0;
 }
 
-#define MAXLEN 1000  /* max length of any input line */
 int getlines(char *, int);
 char *alloc(int);
 
@@ -35,15 +36,18 @@ int readlines(char *lineptr[], int maxlines, char *stored_line)
     int len, nlines;
     char *p, line[MAXLEN];
 
+    p = stored_line + strlen(stored_line);
     nlines=0;
 
-    while ((len = getlines(&stored_line, MAXLEN)) > 0)
-        if (nlines >= maxlines || (stored_line) == NULL)
+    while ((len = getlines(line, MAXLEN)) > 0)
+        if (nlines >= maxlines || (stored_line + MAXLEN - len) < 0)
             return -1;
         else {
             line[len-1] = '\0';  /* delete newline */
-            strcpy(p, line);
+            strcpy(p,line);
+            printf("%s ", p);
             lineptr[nlines++] = p;
+            p += len; // the pointer has not been moved ...
         }
 
     return nlines;
@@ -92,11 +96,11 @@ int getlines(char s[],int lim)
         s[i] = c;
     if (c == '\n') {
         s[i] = c;
-        ++i; 
+        ++i;
     }
     s[i] = '\0';
 
-    return i; 
+    return i;
 }
 
 #define ALLOCSIZE 10000
@@ -111,7 +115,7 @@ char *alloc(int n)
         {
             allocp += n;
             return allocp - n;
-        } else 
+        } else
             return 0;
-    
+
 }
