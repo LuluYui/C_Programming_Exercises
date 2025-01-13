@@ -6,12 +6,9 @@
 #define SIZE 100
 main()
 {
-    char *s;
-    int i, c;
+    int i = -1;
 
-    s = "abc";
-
-    while(*s) {
-        printf("%d", *s++);
+    if (i) {
+        printf("Hellow ");
     }
 }
