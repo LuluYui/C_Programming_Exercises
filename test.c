@@ -6,9 +6,9 @@
 #define SIZE 100
 main()
 {
-    int i = -1;
+    
+    char l[SIZE] = "heo\0 abc";
 
-    if (i) {
-        printf("Hellow ");
-    }
+    // char *p = l + strlen(l);
+    printf("%lu", strlen(l));
 }

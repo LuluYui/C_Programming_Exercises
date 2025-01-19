@@ -16,6 +16,7 @@ Type Coversions :
       example:
           x *= y + 1 is equivalent to x = x * (y + 1)
           x = x * y + 1 is incorrect
+
 - Precedence & Order of Evaluation :
     no rules for function calls evaluation such as f() and g()
     Orders depending on the compiler
@@ -25,7 +26,8 @@ Type Coversions :
         ++n;
         printf("%d %d", n, power(2, n);
 
-- Pointers & Arrays
+POINTERS & ARRAY:
+
   & = " the address of the pointer "
   * = " value of the pointer pointing "
 
@@ -47,13 +49,22 @@ Type Coversions :
     array element's int value will be NEGATIVE.
     Distinguishing between pointers and arrays string.
 
-- functions :
-If the function takes arguments, declare them; if it takes no arguments, use void.
+
+FUNCTIONS: 
+  If the function takes arguments, declare them; if it takes no arguments, use void.
 
 
+STRUCTURES:
+
+p -> member-of-structure : refers to the particular member
+
+- precedence : . -> () [] are of top precedence, so
+    *p++->str increments p after accessing whatever str points to.
+
+- 
 
 
-Personal Notes :
+PERSONAL NOTES:
 1. Set pointers and move pointers are two operations.
 
 
