@@ -1,6 +1,7 @@
 #include <stdio.h>
 
 #define MAX 1000
+#define DEFAULT_TAB_LENGTH 4
 
 // char str[] = " This \t is a \t tab\t\t \tstop test";
 char str[] = "i \t\t\t ";
@@ -10,26 +11,18 @@ char *detab(char *);
 char *entab(char *, char);
 char result[MAX];
 
+int c;
+int arg_pos = 1;
+int line_pos = 0;
+int tab_stop = DEFAULT_TAB_LENGTH;
+int nr_of_spaces = 0;
+
 int main(int argc, char *argv[]){
   char tab;
   char *re;
 
-  // re = detab(str);
-  re = entab(str, '\t');
-
-  // while (--argc > 0 && (*++argv)[0])
-  //   if (*argv[0]=='-')
-  //     switch(*argv[1]) {
-  //       case 't':
-  //         tab = *argv[2];
-  //         // re = entab(str, tab);
-  //         break;
-  //       default:
-  //         re = detab(str);
-  //         break;
-  //     }
-  //     else
-  //       re = detab(str);
+  int nr_of_custom_tab_stops = argc - 1;
+  entab(str, nr_of_custom_tab_stops);
 
   for (int i=0; re[i] != '\0'; i++)
     printf("%d ", re[i]);
@@ -38,42 +31,46 @@ int main(int argc, char *argv[]){
   return 0;
 }
 
-char *entab(char *str, char tab)
+void entab(char *str, char nr_of_custom_tab_stops)
 {
-  int j=0, n=3;
-  int spaces=0;
-
-  for (int i=0; str[i] != '\0'; i++)
+  while ((c = getchar()) != EOF)
   {
-    if (str[i] == '\t')
-    {
-      spaces += n;
-    } else if (str[i] == ' ')
-    {
-      spaces++;
-    } else
-    {
-      // file in blanks
-      int num_tabs = spaces/3;
-      int num_spaces = spaces%3;
-      while (num_tabs--)
-        result[j++] = '\t';
-      while(num_spaces--)
-        result[j++] = ' ';
+    if (c == '\t')
+		{
+			if (nr_of_custom_tab_stops)
+			{
+				tab_stop = atoi(argv[arg_pos++]);
+				--nr_of_custom_tab_stops;
+			}
+			else if (argc > 1)
+			{
+				tab_stop = 1;
+			}
 
-      result[j++] = str[i];
-    }
+			nr_of_spaces = tab_stop - line_pos % tab_stop;
+
+			while (nr_of_spaces)
+			{
+				putchar(' ');
+				++line_pos;
+				--nr_of_spaces;
+			}
+		}
+		else
+		{
+			putchar(c);
+			++line_pos;
+
+			if (c == '\n')
+			{
+				arg_pos = 1;
+				line_pos = 0;
+				nr_of_custom_tab_stops = argc - 1;
+			}
+		}
   }
-  // file blanks up
-  int num_tabs = spaces/3;
-  int num_spaces = spaces%3;
-  while (num_tabs--)
-    result[j++] = '\t';
-  while(num_spaces--)
-    result[j++] = ' ';
-  result[j] = '\0';
 
-  return result;
+
 }
 
 char *detab(char *str) {
