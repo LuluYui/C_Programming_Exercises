@@ -1,49 +1,9 @@
-<<<<<<< HEAD
-#include <string.h>
-#include <ctype.h>
-
-#define NUMERIC  1  /* numeric sort */
-#define DECR    2   /* sort in decreasing order */
-#define FOLD    4   /* fold upper and lower case */
-#define MDIR    8   /* directory order */
-#define LINES   100 /* maximum number of lines to be sorted */
-
-int main(int argc, char *argv[]) 
-{
-
-}
-
-int getword(char *word, int lim)
-{
-    int c, getch(void);
-    void ungetch(int);
-    char *w = word;
-
-    while (isspace(c = getch()))
-        ;
-
-    if (c != EOF)
-        *w++ = c;
-
-    if (!isalpha(c)) {
-        *w = '\0';
-        return c; 
-    }
-    
-    for ( ; --lim > 0; w++)
-    if (!isalnum(*w = getch())) {
-        ungetch(*w);
-        break; 
-    }
-    *w = '\0';
-    return word[0];
-=======
 #include <stdio.h>
 #include <string.h>
 #include <ctype.h>
 #define MAXTOKEN 100
 
-enum { NAME, PARENS, BRACKETS };
+enum { NAME, PARENS, BRACKETS, NOENDBRACKET, ARGUMENT};
 
 void dcl(void);
 void dirdcl(void);
@@ -56,11 +16,26 @@ char token[MAXTOKEN];
 char name[MAXTOKEN];
 /* identifier name */
 char datatype[MAXTOKEN]; /* data type = char, int, etc. */
+char qualifier[MAXTOKEN];
+char arguments[MAXTOKEN];
 char out[1000];
 
+
+/*
+1. handle qualifier Ok
+2. handle argument type in function 
+3. handle complex datatype, be it object, struct or whatever NA
+4. handle spurios blanks OK
+5. invalid declaration
+*/
 int main() /* convert declaration to words */
 {
   while (gettoken() != EOF) {
+    if (!strcmp(token, "const")) 
+    {
+      strcpy(qualifier, token); /* handle const */
+      gettoken(); 
+    }
     /* 1st token on line */
     strcpy(datatype, token); /* is the datatype */
     out[0] = '\0';
@@ -69,7 +44,7 @@ int main() /* convert declaration to words */
     /* parse rest of line */
     if (tokentype != '\n')
       printf("syntax error\n");
-      printf("%s: %s %s\n", name, out, datatype);
+      printf("%s: %s %s %s\n", name, out, qualifier, datatype);
     }
 
     return 0;
@@ -79,6 +54,7 @@ int main() /* convert declaration to words */
 void dcl(void)
 {
   int ns;
+  int a;
 
   for (ns = 0; gettoken() == '*'; ) /* count *'s */
     ns++;
@@ -92,6 +68,7 @@ void dcl(void)
 void dirdcl(void)
 {
   int type;
+  printf("type; %d, token: %s\n", type, token);
   if (tokentype == '(') {
     /* ( dcl ) */
     dcl();
@@ -99,12 +76,18 @@ void dirdcl(void)
       printf("error: missing \")\"\n");
   } else if (tokentype == NAME) /* variable name */
     strcpy(name, token);
-  else
+   else if (tokentype == ARGUMENT) {  
+    strcpy(arguments, token);
+   } else 
     printf("error: expected name or (dcl)\n");
 
   while ( (type=gettoken()) == PARENS || type == BRACKETS)
     if (type == PARENS)
-      strcat(out, " function returning");
+    {
+      strcat(out, " function");
+      strcat(out, arguments);
+      strcat(out, " returning");
+    }
     else {
       strcat(out, " array");
       strcat(out, token);
@@ -122,26 +105,32 @@ int gettoken(void) /* return next token */
     ;
 
   if (c == '(') {
+    // handle spurious spaces before dereference operators 
+    while ((c = getch()) == ' ' || c == '\t')
+      ;
+
     if ((c = getch()) == ')') {
-    strcpy(token, "()");
-    return tokentype = PARENS;
+      strcpy(token, "()");
+      return tokentype = PARENS;
     } else {
-    ungetch(c);
-    return tokentype = '(';
+      ungetch(c);
+      return tokentype = '(';
     }
   } else if (c == '[') {
-    for (*p++ = c; (*p++ = getch()) != ']'; )
-      ;
+    for (*p++ = c; (*p++ = getch()) != ']';  )
+        if(*(p-1) == ' ' || *(p-1) == '\t' || *(p-1) == '\n') p--;
     *p = '\0';
     return tokentype = BRACKETS;
   } else if (isalpha(c)) {
-    for (*p++ = c; isalnum(c = getch()); )
+    for (*p++ = c; isalnum(c = getch());)
       *p++ = c;
     *p = '\0';
     ungetch(c);
     return tokentype = NAME;
   } else
+  {
     return tokentype = c;
+  }
 }
 
 #define BUFSIZE 100
@@ -159,5 +148,4 @@ void ungetch(int c) /* push character back on input */
         printf("ungetch: too many characters\n");
     else
         buf[bufp++] = c;
->>>>>>> origin/main
 }

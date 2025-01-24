@@ -61,8 +61,15 @@ p -> member-of-structure : refers to the particular member
 - precedence : . -> () [] are of top precedence, so
     *p++->str increments p after accessing whatever str points to.
 
-- 
+-  self-referential structure : 
+  struct t {
+    ...
+    struct s *p;
+  };
 
+  struct s {
+    struct t *q;
+  };
 
 PERSONAL NOTES:
 1. Set pointers and move pointers are two operations.
